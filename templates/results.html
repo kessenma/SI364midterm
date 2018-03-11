@@ -1,0 +1,15 @@
+<h1>Your name is {{ name }}.</h1>
+<br>
+
+{% if name_len > 4 %}
+    <p>(Your name is longer than 4 letters!)</p>
+{% else %}
+    <p>(Your name is NOT longer than 4 letters!)</p>
+{% endif %}
+<br>
+<h2>The Bitcoins you chose are:</h2>
+<ul>
+{% for each in flavors %}
+    <li>{{ each }}</li>
+{% endfor %}
+</ul>

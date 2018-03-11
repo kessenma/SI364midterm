@@ -1,0 +1,14 @@
+<ul>
+    <li><a href="{{ url_for('index') }}">Home</a></li>
+    <li><a href="{{ url_for('enter_info') }}">Form</a></li>
+</ul>
+
+{% block content %}
+
+{% if num_bitcoin==1 %}
+{{ num_bitcoin }} bitcoin saved.
+{% else %}
+{{ num_bitcoin }} coins saved.
+{% endif %}
+
+{% endblock %}

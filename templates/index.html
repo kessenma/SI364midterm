@@ -1,0 +1,16 @@
+{% extends 'home.html' %}
+{% block content %}
+<div class="page-header">
+    <h1>{% if num_bitcoin %}{{ num_bitcoin }}{% else %}0{% endif %} possible bitccoin saved. </h1>
+</div>
+
+<div>
+<form method="POST">
+	{{ form.hidden_tag() }}
+	{{ form.bitcoin.label }} {{ form.bitcoin() }}
+	{{ form.name.label }} {{ form.name() }}
+	{{ form.email.label }} {{ form.email() }}
+	{{ form.submit() }}
+</form>
+
+{% endblock %}

@@ -50,17 +50,17 @@ class bitcoin(db.Model):
     __tablename__ = "bitcoin"
     id = db.Column(db.Integer, primary_key=True)
     bitcoin = db.Column(db.String(64))
-    name_entered = db.Column(db.String())
-    user_id = db.Column(db.Integer, db.ForeignKey("bitcoin.id"))
+    #username = db.Column(db.String())
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
     def __repr__(self):
         return "{} | ID: {})".format(self.bitcoin,self.id)
 
 class User(db.Model):
-    __tablename__ = "users"
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True)
-    display_name = db.Column(db.String(124)) 
+    #display_name = db.Column(db.String(124)) 
 
 
     def __repr__(self):
@@ -72,24 +72,20 @@ class User(db.Model):
 
 class bitcoinForm(FlaskForm):
     bitcoin = StringField("Which bitcoin are you interested in?", validators=[Required(), Length(min=1, max=64)])
-    name_entered = StringField('What is your name?', validators=[Required(), Length(min=1, max=24)])
+    username = StringField('What is your name?', validators=[Required(), Length(min=1, max=24)])
     #email = StringField('Enter your email (must include an @'), validators=[Required(@)]
     submit = SubmitField('Submit')
 
     def validate_bitcoin(self, field):
         if (len(field.data) < 1) and (len(field.data) > 64):
             raise ValidationError("Please keep your Tweet between 1 and 280 characters long!")
-
+'''
     def validate_username(self, field):
         if field.data.has('@'):
             raise ValidationError("Please do not add the @ in the username")
         if (len(field.data) < 1) and (len(field.data) > 64):
             raise ValidationError("Username field must be between 1 and 64 characters long.")
-    
-
-
-
-
+'''
 
 #######################
 ###### VIEW FXNS ######
@@ -107,17 +103,24 @@ def enter_info():
     form = bitcoinForm()
     if form.validate_on_submit():
         #Get the form data in variables
-        bitcoin = form.bitcoin.data
-        name = form.name.data
-        email = form.email.data
-        possible_bitcoin = bitcoin.query.filter_by(name=bitcoin).first()
+        bitcoin_name = form.bitcoin.data
+        username = form.username.data
+        #email = form.email.data
+        possible_bitcoin = bitcoin.query.filter_by(bitcoin=bitcoin_name).first()
+        possible_user = User.query.filter_by(username=username).first()
+        if possible_user is None: 
+            user_obj = User(username=username)
+            db.session.add(user_obj)
+            db.session.commit()
+        possible_user_id = User.query.filter_by(username=username).first().id 
+        
         if possible_bitcoin is None:
-            BT = bitcoin(name=bitcoin,name_entered=name)
+            BT = bitcoin(bitcoin=bitcoin_name, user_id=possible_user_id)
             db.session.add(BT)
             db.session.commit()
         return redirect(url_for('enter_info'))
         flash('Your information has been added!')
-    return render_template('index.html')
+    return render_template('index.html', form=form)
 
 
 ###########################
